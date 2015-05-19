@@ -1,5 +1,6 @@
 #import "TMDiskCache.h"
 #import "TMCacheBackgroundTaskManager.h"
+#import "CryptoCoding.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
 #import <UIKit/UIKit.h>
@@ -409,7 +410,8 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
 
         if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
             @try {
-                object = [NSKeyedUnarchiver unarchiveObjectWithFile:[fileURL path]];
+                //object = [NSKeyedUnarchiver unarchiveObjectWithFile:[fileURL path]];
+                object = [CryptoCoder unarchiveObjectWithFile:[fileURL path]];
             }
             @catch (NSException *exception) {
                 NSError *error = nil;
@@ -450,7 +452,7 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
     });
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key block:(TMDiskCacheObjectBlock)block
+- (void)setObject:(id <CryptoCoding>)object forKey:(NSString *)key block:(TMDiskCacheObjectBlock)block
 {
     NSDate *now = [[NSDate alloc] init];
 
@@ -473,7 +475,8 @@ NSString * const TMDiskCacheSharedName = @"TMDiskCacheShared";
         if (strongSelf->_willAddObjectBlock)
             strongSelf->_willAddObjectBlock(strongSelf, key, object, fileURL);
 
-        BOOL written = [NSKeyedArchiver archiveRootObject:object toFile:[fileURL path]];
+        // BOOL written = [NSKeyedArchiver archiveRootObject:object toFile:[fileURL path]];
+        BOOL written = [CryptoCoder archiveRootObject:object toFile:[fileURL path]];
 
         if (written) {
             [strongSelf setFileModificationDate:now forURL:fileURL];
